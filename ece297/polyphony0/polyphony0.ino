@@ -1,5 +1,6 @@
 /*
- * 2 buttons, 2 waveforms, they should be able to play at the same time
+ * 2 buttons, 2 waveforms, they should be able to play at the same time 
+ * 1 button on pin 0, 1 button on pin 1 
  */
 
 #include <Audio.h>
@@ -19,14 +20,16 @@ AudioConnection          patchCord3(waveform2, 0, i2s1, 1);
 AudioConnection          patchCord4(waveform2, 0, dacs1, 1);
 AudioControlSGTL5000     sgtl5000_1;     //xy=239,232
 
+
+// defines buttons using Bounce objects to ignore additional vibrations on buttons 
 Bounce button0 = Bounce(0, 15);
 Bounce button1 = Bounce(1, 15);
-Bounce button2 = Bounce(2, 15);
 
-const int onamp = 10;
+const int onamp = 10; // amplitude on waveform when on 
 
 void setup() {
   Serial.begin(9600);
+  // sets pins to active low 
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
 
@@ -34,20 +37,19 @@ void setup() {
   // detailed information, see the MemoryAndCpuUsage example
   AudioMemory(10);
 
-  // Comment these out if not using the audio adaptor board.
-  // This may wait forever if the SDA & SCL pins lack
-  // pullup resistors
   sgtl5000_1.enable();
-  sgtl5000_1.volume(0.2); // caution: very loud - use oscilloscope only!
+  sgtl5000_1.volume(0.2); 
   
   waveform1.begin(WAVEFORM_SINE);
   waveform2.begin(WAVEFORM_SINE);
 }
 
 void loop() {
+// checks for change in button status (pressed or released) 
   button0.update();
   button1.update();
 
+// if buttons are pressed 
   if (button0.fallingEdge()) {
     Serial.println("Pressed");
     waveform1.frequency(440);
@@ -60,6 +62,7 @@ void loop() {
     waveform2.amplitude(onamp);
   }
 
+// if buttons are released 
   if (button0.risingEdge()) {
     Serial.println("Released");
     waveform1.amplitude(0);
