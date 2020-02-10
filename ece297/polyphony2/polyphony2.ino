@@ -19,17 +19,17 @@ AudioSynthWaveform waveform[NUMBUTTONS];
 AudioOutputI2S           i2s1;           //xy=360,98
 AudioOutputAnalogStereo  dacs1;          //xy=372n,173
 AudioConnection patchCord[] = {
-  {waveform[0], 0, i2s1, 0}, {waveform[0], 0, dacs1, 0},
-  {waveform[1], 0, i2s1, 0}, {waveform[1], 0, dacs1, 0},
-  {waveform[2], 0, i2s1, 0}, {waveform[2], 0, dacs1, 0},
+  {waveform[0], 0, i2s1, 3}, {waveform[0], 0, dacs1, 3},
+  {waveform[1], 0, i2s1, 4}, {waveform[1], 0, dacs1, 4},
+  {waveform[2], 0, i2s1, 5}, {waveform[2], 0, dacs1, 5},
   
-  {waveform[3], 1, i2s1, 1}, {waveform[3], 1, dacs1, 1},
-  {waveform[4], 1, i2s1, 1}, {waveform[4], 1, dacs1, 1},
-  {waveform[5], 1, i2s1, 1}, {waveform[5], 1, dacs1, 1},
+  {waveform[3], 1, i2s1, 3}, {waveform[3], 1, dacs1, 3},
+  {waveform[4], 1, i2s1, 4}, {waveform[4], 1, dacs1, 4},
+  {waveform[5], 1, i2s1, 5}, {waveform[5], 1, dacs1, 5},
   
-  {waveform[6], 2, i2s1, 2}, {waveform[6], 2, dacs1, 2},
-  {waveform[7], 2, i2s1, 2}, {waveform[7], 2, dacs1, 2},
-  {waveform[8], 2, i2s1, 2}, {waveform[8], 2, dacs1, 2},
+  {waveform[6], 2, i2s1, 3}, {waveform[6], 2, dacs1, 3},
+  {waveform[7], 2, i2s1, 4}, {waveform[7], 2, dacs1, 4},
+  {waveform[8], 2, i2s1, 5}, {waveform[8], 2, dacs1, 5},
 };
 AudioControlSGTL5000     sgtl5000_1;     //xy=239,232
 
@@ -89,7 +89,8 @@ void loop() {
 
   if (digitalRead(0) == LOW) {
     Serial.println("Pressed 0");
-    waveform[cycle].frequency(tones[row - 3][0]);
+    waveform[cycle].frequency(330);
+    //waveform[cycle].frequency(tones[row - 3][0]);
     waveform[cycle].amplitude(onamp);
   }
   else {
@@ -97,7 +98,8 @@ void loop() {
   }
   if (digitalRead(1) == LOW) {
     Serial.println("Pressed 1");
-    waveform[cycle + 1].frequency(tones[row - 3][1]);
+    waveform[cycle + 2].frequency(263);
+    // waveform[cycle + 1].frequency(tones[row - 3][1]);
     waveform[cycle + 1].amplitude(onamp);
   }
   else {
@@ -105,7 +107,8 @@ void loop() {
   }
   if (digitalRead(2) == LOW) {
     Serial.println("Pressed 2");
-    waveform[cycle + 2].frequency(tones[row - 3][2]);
+    waveform[cycle + 2].frequency(292);
+    //waveform[cycle + 2].frequency(tones[row - 3][2]);
     waveform[cycle + 2].amplitude(onamp);
   }                                             
   else {
@@ -113,6 +116,8 @@ void loop() {
   } 
 
   digitalWrite(row, HIGH);
+
+  delayMicroseconds(10);
 
   row = ((row + 1) % 3) + 3;
 
