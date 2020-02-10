@@ -1,5 +1,9 @@
 /*
- * same shit as last time but now with a button matrix;
+ * 9 button matrix 
+ * on pins 0, 1, and 2 
+ * should be able to play at the same time, 
+ * but some tones will take precedence over others 
+ *
  */
 
 #include <Audio.h>
@@ -9,7 +13,7 @@
 #include <SerialFlash.h>
 #include <Bounce.h>
 
-const int NUMBUTTONS = 9;
+const int NUMBUTTONS = 9; // number of buttons 
 
 AudioSynthWaveform waveform[NUMBUTTONS];
 AudioOutputI2S           i2s1;           //xy=360,98
@@ -19,16 +23,17 @@ AudioConnection patchCord[] = {
   {waveform[1], 0, i2s1, 0}, {waveform[1], 0, dacs1, 0},
   {waveform[2], 0, i2s1, 0}, {waveform[2], 0, dacs1, 0},
   
-  {waveform[3], 0, i2s1, 1}, {waveform[3], 0, dacs1, 1},
-  {waveform[4], 0, i2s1, 1}, {waveform[4], 0, dacs1, 1},
-  {waveform[5], 0, i2s1, 1}, {waveform[5], 0, dacs1, 1},
+  {waveform[3], 1, i2s1, 1}, {waveform[3], 1, dacs1, 1},
+  {waveform[4], 1, i2s1, 1}, {waveform[4], 1, dacs1, 1},
+  {waveform[5], 1, i2s1, 1}, {waveform[5], 1, dacs1, 1},
   
-  {waveform[6], 0, i2s1, 0}, {waveform[6], 0, dacs1, 0},
-  {waveform[7], 0, i2s1, 0}, {waveform[7], 0, dacs1, 0},
-  {waveform[8], 0, i2s1, 1}, {waveform[8], 0, dacs1, 1},
+  {waveform[6], 2, i2s1, 2}, {waveform[6], 2, dacs1, 2},
+  {waveform[7], 2, i2s1, 2}, {waveform[7], 2, dacs1, 2},
+  {waveform[8], 2, i2s1, 2}, {waveform[8], 2, dacs1, 2},
 };
 AudioControlSGTL5000     sgtl5000_1;     //xy=239,232
 
+// notes/frequencies the waveform plays at 
 int tones[3][3] = {
   {262, 294, 330},
   {349, 392, 440},
