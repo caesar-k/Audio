@@ -6,6 +6,8 @@
  *
  */
 
+#include "Pizzicato_samples.h"
+
 #include <Audio.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -14,26 +16,22 @@
 #include <Bounce.h>
 
 const int NUMBUTTONS = 9; // number of buttons 
+const int TOTAL_MIXERS = 3;
 
-AudioSynthWaveform waveform[NUMBUTTONS];
+AudioSynthWavetable wavetable[NUMBUTTONS];
+AudioMixer4 mixer[TOTAL_MIXERS]; 
 AudioOutputI2S           i2s1;           //xy=360,98
-AudioOutputAnalogStereo  dacs1;          //xy=372n,173
 AudioConnection patchCord[] = {
-  {waveform[0], 0, i2s1, 1}, {waveform[0], 0, dacs1, 1},
-  {waveform[1], 0, i2s1, 1}, {waveform[1], 0, dacs1, 1},
-  {waveform[2], 0, i2s1, 1}, {waveform[2], 0, dacs1, 1},
- 
-  {waveform[3], 1, i2s1, 1}, {waveform[3], 1, dacs1, 1},
-  {waveform[4], 1, i2s1, 1}, {waveform[4], 1, dacs1, 1},
-  {waveform[5], 1, i2s1, 1}, {waveform[5], 1, dacs1, 1},
-  
-  {waveform[6], 2, i2s1, 1}, {waveform[6], 2, dacs1, 1},
-  {waveform[7], 2, i2s1, 1}, {waveform[7], 2, dacs1, 1},
-  {waveform[8], 2, i2s1, 1}, {waveform[8], 2, dacs1, 1},
+  {wavetable[0], 0, mixer[0], 0}, {wavetable[1], 0, mixer[0], 1}, {wavetable[2], 0, mixer[0],  2}, {wavetable[3], 0, mixer[0],  3}, {mixer[0], 0, mixer[TOTAL_MIXERS - 2], 0},
+  {wavetable[4], 0, mixer[1], 0}, {wavetable[5], 0, mixer[1], 1}, {wavetable[6], 0, mixer[1],  2}, {wavetable[7], 0, mixer[1],  3}, {mixer[1], 0, mixer[TOTAL_MIXERS - 2], 1},
+  {wavetable[8], 0, mixer[2], 0}, {mixer[2], 0, mixer[TOTAL_MIXERS - 2], 2},
+  {mixer[TOTAL_MIXERS - 2], 0, mixer[TOTAL_MIXERS - 1], 0},
+  {mixer[TOTAL_MIXERS - 1], 0, i2s1, 0},
+  {mixer[TOTAL_MIXERS - 1], 0, i2s1, 1},
 };
 AudioControlSGTL5000     sgtl5000_1;     //xy=239,232
 
-// notes/frequencies the waveform plays at 
+// notes/frequencies the wavetable plays at 
 int tones[3][3] = {
   {262, 294, 330},
   {349, 392, 440},
@@ -72,7 +70,7 @@ void setup() {
   sgtl5000_1.volume(0.2); // caution: very loud - use oscilloscope only!
 
   for (int i = 0; i < NUMBUTTONS; i++) {
-    waveform[i].begin(WAVEFORM_SINE);
+    wavetable[i].setInstrument(Pizzicato);
   }
 
   Serial.println("Ready");
@@ -89,30 +87,30 @@ void loop() {
 
   if (digitalRead(0) == LOW) {
     Serial.println("Pressed 0");
-    waveform[cycle].frequency(330);
+    wavetable[cycle].frequency(330);
     //waveform[cycle].frequency(tones[row - 3][0]);
-    waveform[cycle].amplitude(onamp);
+    wavetable[cycle].amplitude(onamp);
   }
   else {
     waveform[cycle].amplitude(0);
   }
   if (digitalRead(1) == LOW) {
     Serial.println("Pressed 1");
-    waveform[cycle + 2].frequency(263);
+    wavetable[cycle + 2].frequency(263);
     // waveform[cycle + 1].frequency(tones[row - 3][1]);
-    waveform[cycle + 1].amplitude(onamp);
+    wavetable[cycle + 1].amplitude(onamp);
   }
   else {
-    waveform[cycle + 1].amplitude(0);
+    wavetable[cycle + 1].amplitude(0);
   }
   if (digitalRead(2) == LOW) {
     Serial.println("Pressed 2");
-    waveform[cycle + 2].frequency(292);
-    //waveform[cycle + 2].frequency(tones[row - 3][2]);
-    waveform[cycle + 2].amplitude(onamp);
+    wavetable[cycle + 2].frequency(292);
+    //wavetable[cycle + 2].frequency(tones[row - 3][2]);
+    wavetable[cycle + 2].amplitude(onamp);
   }                                             
   else {
-    waveform[cycle + 2].amplitude(0);
+    wavetable[cycle + 2].amplitude(0);
   } 
 
   digitalWrite(row, HIGH);
